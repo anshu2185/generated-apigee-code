@@ -1,0 +1,20 @@
+node {
+   echo 'SharedFlow Deployment started...'
+  def org = params.org
+   def username = params.username
+   def password = params.password
+	stage ('Checkout'){
+		checkout scm
+	}
+	
+	stage ('Deploying SharedFlow'){
+		def mvnHome = tool 'Maven3.3.9'
+	    sh "${mvnHome}/bin/mvn --version"
+		def files = findFiles(glob: "**/pom.xml")
+		def fileSize = files.size()
+    for ( int i = 0; i < fileSize; i++) {
+	    sh "${mvnHome}/bin/mvn clean install -f ${files[i]} -P test -Dorg=${org} -Dusername=${username} -Dpassword=${password}"
+    }
+	}		
+
+}
